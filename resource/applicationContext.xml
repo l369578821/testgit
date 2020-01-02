@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+
+	<!--spring构造注入-->
+	<bean id="zhangGa" class="com.kgc.hello.Greeting">
+		<constructor-arg name="person" value="张三" index="0"/>
+		<constructor-arg name="words" value="三天不打鬼子，手痒痒"/>
+	</bean>
+
+
+	<!--spring set/get依赖注入-->
+	<!--zhangGa<bean id="zhangGa" class="com.kgc.hello.Greeting">
+		<property name="person">
+			<value>张嘎</value>
+		</property>
+		<property name="words">
+			<value>三天不打鬼子</value>
+		</property>
+	</bean>
+	<bean id="rod" class="com.kgc.hello.Greeting">
+		<property name="person">
+			<value>Rod</value>
+		</property>
+		<property name="words">
+			<value>世界上有人</value>
+		</property>
+
+	</bean>-->
+
+	<!--定义纸张和墨盒-->
+	<bean id="a4" class="com.kgc.entity.A4Paper"/>
+	<bean id="b5" class="com.kgc.entity.B5Paper"/>
+	<bean id="blackInk" class="com.kgc.entity.BlackInk"/>
+	<bean id="colorInk" class="com.kgc.entity.ColorInk"/>
+
+	<!--组装打印机-->
+	<bean id="printer" class="com.kgc.entity.Printer">
+		<property name="ink" ref="blackInk"/>
+		<property name="paper" ref="a4"/>
+	</bean>
+
+
+	<!--spring aop切入（通过class引入文件，id自定义，切面点需调用此id）-->
+	<bean id="LoggerAdvice" class="com.kawa.LoggerAdvice"></bean>
+	<aop:config>
+		<!--id为自定义，但前置增加/后置增强需与切点id保持一致，expression为表达式，execution为切入点指示符-->
+		<aop:pointcut id="pointcut" expression="execution(public void print())"/>
+
+		<!--切面，通过bean id将文件引入-->
+		<aop:aspect ref="LoggerAdvice">
+
+			<!--前置增强-->
+			<aop:before method="before" pointcut-ref="pointcut"/>
+
+			<!--后置增强-->
+			<aop:after-returning method="afterRuturning" pointcut-ref="pointcut"/>
+		</aop:aspect>
+	</aop:config>
+
+	<!--注入基本数据类型，字符串-->
+	<bean id="user" class="com.kgc.hello.User">
+		<property name="userName">
+			<value>张三</value>
+		</property>
+		<property name="address">
+			<value>深圳</value>
+		</property>
+
+
+	</bean>
+
+
+
+
+
+</beans>
